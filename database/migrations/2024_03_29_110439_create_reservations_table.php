@@ -17,9 +17,8 @@ return new class extends Migration
                 $table->id();
                 $table->unsignedBigInteger('annoucement_id');
                 $table->unsignedBigInteger('benevole_id');
-                $table->text('required_skills');
                 $table->text('message')->nullable();
-                $table->enum('status', ['waiting', 'accept', 'refused'])->default('waiting');
+                $table->enum('status', ['waiting', 'accepted', 'rejected'])->default('waiting');
                 $table->timestamps();
                 $table->foreign('annoucement_id')->references('id')->on('annoucements')->onDelete('cascade');
                 $table->foreign('benevole_id')->references('id')->on('users')->onDelete('cascade');

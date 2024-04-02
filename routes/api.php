@@ -38,3 +38,10 @@ Route::get('annoucements/{id}',[AnnoucementsController::class,'show']);
 Route::get('annoucements/{id}/edit',[AnnoucementsController::class,'edit']);
 Route::put('updateAnnoucements/{id}/edit',[AnnoucementsController::class,'update']);
 Route::delete('annoucements/{id}/delete',[AnnoucementsController::class,'destroy']);
+
+
+
+
+Route::post('storeReservation/{id}', [ReservationController::class, 'store']);
+Route::get('dataReservations', [ReservationController::class, 'index']);
+Route::put('updateStatut/{id}',[ReservationController::class,'updateStatut']);

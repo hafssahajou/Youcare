@@ -10,7 +10,54 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ApiController extends Controller 
 {
-    // User Register (POST, formdata)
+   /**
+     * @OA\Post(
+     *     path="/api/registeer",
+     *     tags={"auth"},
+     *     summary="Register a new user",
+     *     description="Register a new user with the specified name, email, password, and role.",
+     *     operationId="register",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     description="User's name",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="email",
+     *                     type="string",
+     *                     format="email",
+     *                     description="User's email",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="password",
+     *                     type="string",
+     *                     format="password",
+     *                     description="User's password",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="role",
+     *                     type="string",
+     *                     description="User's role (organizer or volunteer)",
+     *                 ),
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User registered successfully",
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *     )
+     * )
+     */
+
     public function register(Request $request){
         // data validation
         $request->validate([
@@ -33,7 +80,44 @@ class ApiController extends Controller
         ]);
     }
 
-    // User Login (POST, formdata)
+    /**
+     * @OA\Post(
+     *     path="/api/login",
+     *     tags={"auth"},
+     *     summary="Login",
+     *     description="Login with the specified email and password.",
+     *     operationId="login",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="email",
+     *                     type="string",
+     *                     format="email",
+     *                     description="User's email",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="password",
+     *                     type="string",
+     *                     format="password",
+     *                     description="User's password",
+     *                 ),
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User logged in successfully",
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Invalid credentials",
+     *     )
+     * )
+     */
+
     public function login(Request $request){
         
         // data validation
@@ -75,7 +159,25 @@ class ApiController extends Controller
         ]);
     } 
 
-    // To generate refresh token value
+    /**
+     * @OA\Get(
+     *     path="/api/refresh",
+     *     tags={"auth"},
+     *     summary="Refresh authentication token",
+     *     description="Refresh the authentication token of the authenticated user.",
+     *     operationId="refreshToken",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Token refreshed successfully",
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *     )
+     * )
+     */
+
     public function refreshToken(){
         
         $newToken = auth()->refresh();
@@ -87,7 +189,25 @@ class ApiController extends Controller
         ]);
     }
 
-    // User Logout (GET)
+   /**
+     * @OA\Get(
+     *     path="/api/logout",
+     *     tags={"auth"},
+     *     summary="Logout",
+     *     description="Logout the authenticated user.",
+     *     operationId="logout",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="User logged out successfully",
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *     )
+     * )
+     */
+
     public function logout(){
         
         auth()->logout();

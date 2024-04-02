@@ -100,25 +100,7 @@ class AnnoucementsController extends Controller
      }
  }
 
- public function edit($id){
-    $user = Auth::guard('api')->user();
-    $announcement = Annoucements::find($id);
-    if ($announcement){
-        return response()->json([
-            'status' => 200,
-            'message' => $announcement
-        ],200);
-    } else {
-        return response()->json([
-            'status' => 404,
-            'message' => 'no annoucement found'
-        ],404);
-    }
-}
-
-
-
-public function update(Request $request, int $id){
+ public function update(Request $request, int $id){
 
     $validator = Validator::make($request->all(), [
         'title' => 'required|string|max:255',
@@ -138,6 +120,16 @@ public function update(Request $request, int $id){
         $announcement = Annoucements::find($id);
         
         if($announcement){
+            // Vérifier si l'utilisateur est bien l'organisateur de l'annonce
+            $user = Auth::guard('api')->user();
+            if ($user->id !== $announcement->organizer_id) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'You are not authorized to update this announcement'
+                ],403);
+            }
+            
+            // Si l'utilisateur est l'organisateur, mettre à jour l'annonce
             $announcement->update([
                 'title' => $request->title,
                 'type' => $request->type,
@@ -161,22 +153,50 @@ public function update(Request $request, int $id){
     }
 }    
 
-   
-public function destroy($id){
-    $announcement = Annoucements::find($id);
-    if ($announcement){
-        $announcement->delete();
+
+
+
+
+public function edit(Request $request, Annoucement $annoucement)
+{
+    $user = Auth::user();
+
+    if ($user->organizer->id !== $annoucement->organizer_id) {
         return response()->json([
-            'status' => 200,
-            'message' => 'announcement deleted successfully'
-        ],404);
-    }
-    else {
-        return response()->json([
-            'status' => 404,
-            'message' => 'no such announcement found'
-        ],404);
+            'error' => 'You are not authorized to update this announcement.'
+        ], 403);
     }
 
+    $updateData = $request->all();
+    foreach ($updateData as $key => $value) {
+        if ($annoucement->offsetExists($key)) {
+            $annoucement->$key = $value;
+        }
+    }
+    
+
+    $annoucement->save();
+
+    return response()->json([
+        'message' => 'Announcement data updated successfully',
+        'updated_announcement' => $annoucement
+    ]);
+}
+
+public function destroy($id)
+{
+    $announcement = Annoucements::find($id);
+    if (!$announcement) {
+        return response()->json([
+            'status' => 404,
+            'message' => 'No such announcement found'
+        ], 404);
+    }
+
+    $announcement->delete();
+    return response()->json([
+        'status' => 200,
+        'message' => 'Announcement deleted successfully'
+    ], 200);
 }
 }
